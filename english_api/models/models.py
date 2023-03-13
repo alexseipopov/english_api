@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+
 from .. import app, db
 
 
