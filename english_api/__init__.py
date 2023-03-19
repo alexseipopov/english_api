@@ -11,3 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+from .admin import admin as ad
+
+# app.register_blueprint(ad)
