@@ -11,8 +11,11 @@ class User(db.Model):
 
 class Group(db.Model):
     id = sa.Column(sa.Integer, primary_key=True)
+    label = sa.Column(sa.Text)
     level = sa.Column(sa.Integer, nullable=False, default=0)
-    words = db.relationship('Word', backref='group', lazy=True)
+
+    def __repr__(self) -> str:
+        return f"{self.label}: {self.level} level"
 
 
 class Word(db.Model):
@@ -20,6 +23,7 @@ class Word(db.Model):
     word_en = sa.Column(sa.Text, nullable=False)
     word_ru = sa.Column(sa.Text, nullable=False)
     example = sa.Column(sa.Text)
-    audio = sa.Column(sa.Text)
-    image = sa.Column(sa.Text)
-    group = sa.Column(sa.Integer, sa.ForeignKey('group.id'), nullable=False)
+    audio_path = sa.Column(sa.Text)
+    image_path = sa.Column(sa.Text)
+    group_id = sa.Column(sa.Integer, db.ForeignKey('group.id'), nullable=False)
+    group = db.relationship('Group', backref='group', lazy=True)
