@@ -10,19 +10,24 @@ admin = Admin(app, url='/admin', template_mode='bootstrap4')
 
 class WordAdminView(ModelView):
     column_list = ("id", "word_en", "word_ru", "example", "audio_path", "image_path", "group_id")
-    form_columns = ("word_en", "word_ru", "example", "audio_path", "group")
+    form_columns = ("word_en", "word_ru", "example", "audio_path", "image_path", "group")
     form_ajax_refs = {
         "group": {
             "fields": ("label",)
         }
     }
     form_overrides = {
-        "audio_path": FileUploadField
+        "audio_path": FileUploadField,
+        "image_path": FileUploadField
     }
     form_args = {
-        'audio_path': {
-            'label': 'File',
-            'base_path': app.config["UPLOAD_FOLDER_AUDIO"]
+        "audio_path": {
+            "label": "Аудио файл",
+            "base_path": app.config["UPLOAD_FOLDER_AUDIO"]
+        },
+        "image_path": {
+            "label": "Изображение",
+            "base_path": app.config["UPLOAD_FOLDER_IMAGE"]
         }
     }
     column_searchable_list = ("word_en", "word_ru")
