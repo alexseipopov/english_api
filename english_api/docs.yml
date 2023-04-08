@@ -130,12 +130,12 @@ paths:
       summary: Request to authorize user.
       description: This request will return an authorization token for signing subsequent requests
       parameters:
-        - in: header
-          name: auth_token
-          description: auth_token for recognize the user. send into header
-          required: true
-          schema:
-            type: integer
+        # - in: header
+        #   name: auth_token
+        #   description: auth_token for recognize the user. send into header
+        #   required: true
+        #   schema:
+        #     type: integer
         - in: query
           name: phone
           description: phone of target user
