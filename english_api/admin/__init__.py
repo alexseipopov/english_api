@@ -1,5 +1,6 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.form import FileUploadField
 
 from english_api import app, db
 from english_api.models.models import Group, User, Word
@@ -13,6 +14,20 @@ class WordAdminView(ModelView):
     form_ajax_refs = {
         "group": {
             "fields": ("label",)
+        }
+    }
+    form_overrides = {
+        "audio_path": FileUploadField,
+        "image_path": FileUploadField
+    }
+    form_args = {
+        "audio_path": {
+            "label": "Аудио файл",
+            "base_path": app.config["UPLOAD_FOLDER_AUDIO"]
+        },
+        "image_path": {
+            "label": "Изображение",
+            "base_path": app.config["UPLOAD_FOLDER_IMAGE"]
         }
     }
     column_searchable_list = ("word_en", "word_ru")

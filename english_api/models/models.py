@@ -5,8 +5,9 @@ from .. import db
 
 class User(db.Model):
     id = sa.Column(sa.Integer, primary_key=True)
-    phone = sa.Column(sa.Text)
-    email = sa.Column(sa.Text)
+    phone = sa.Column(sa.Text, unique=True)
+    email = sa.Column(sa.Text, unique=True)
+    password = sa.Column(sa.Text)
 
 
 class Group(db.Model):

@@ -16,10 +16,12 @@ services:
     container_name: english_api
     env_file:
       - ./.env
-    build: .
+    image: alexseipopov/english_api
     restart: always
     ports:
-      - 5000:5000
+      - 3015:3015
+    volumes:
+      - api_storage:/var/lib/app_data
     depends_on:
       - db
     links:
@@ -29,5 +31,7 @@ services:
 
 volumes:
     api_db:
+      driver: local
+    api_storage:
       driver: local
 
