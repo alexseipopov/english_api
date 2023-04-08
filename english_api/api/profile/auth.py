@@ -31,10 +31,6 @@ def register():
 
 @api.post("/auth")
 def auth():
-    auth_token = request.headers.get("auth_token")
-    if not auth_token:
-        return create_res_obj(status="FAILURE", description="Not found auth_token in headers"), 400
-    auth_token = int(auth_token)
     phone = request.form.get("phone")
     password = request.form.get("password")
     if not phone or not password:
@@ -43,10 +39,6 @@ def auth():
 
     if not user or not check_password_hash(user.password, password=password):
         return create_res_obj(status="FAILURE", description="User or password is incorrect"), 400
-
-    # TODO здесь будет проверка hash ключа
-    if user.id != auth_token:
-        return create_res_obj(status="FAILURE", description="Auth error. not found auth token in system"), 400
 
     user_schema = UserSchema(exclude=["password"])
     data = user_schema.dump(user)
