@@ -3,9 +3,17 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from english_api import db
 from english_api.api import api
-from english_api.models.models import User
+from english_api.models.models import User, User_Has_Word, Word
 from english_api.models.serializer import UserSchema
 from english_api.utils import create_res_obj
+
+
+def insert_new_user(user_id):
+    words = Word.query.filter_by(group_id=1).all()
+    for word in words:
+        line = User_Has_Word(user_id=user_id, word_id=word.id, status_id=1)
+        db.session.add(line)
+    db.session.commit()
 
 
 @api.post("/register")
@@ -26,6 +34,7 @@ def register():
     db.session.commit()
     user_schema = UserSchema(exclude=["password"])
     result = user_schema.dump(user)
+    insert_new_user(result["id"])
     return create_res_obj(data=result), 200
 
 
