@@ -32,6 +32,12 @@ class WordAdminView(ModelView):
     }
     column_searchable_list = ("word_en", "word_ru")
 
+    def on_model_change(self, form, model, is_created):
+        if is_created:
+            # for i in form:
+            #     print(i.value)
+            print(model.group_id)
+
 
 class GroupAdminView(ModelView):
     column_list = ("label", "level")
@@ -39,6 +45,8 @@ class GroupAdminView(ModelView):
     column_searchable_list = ("label",)
 
 
+# TODO убрать на деплое - это служебная информация
 admin.add_view(ModelView(User, db.session))
+
 admin.add_view(GroupAdminView(Group, db.session))
 admin.add_view(WordAdminView(Word, db.session))

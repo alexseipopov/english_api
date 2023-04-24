@@ -10,12 +10,25 @@ class User(db.Model):
     phone = sa.Column(sa.Text, unique=True)
     email = sa.Column(sa.Text, unique=True)
     password = sa.Column(sa.Text)
+    level = sa.Column(sa.Integer, nullable=False, default=1)
+    code_id = sa.Column(sa.Integer, sa.ForeignKey('code.id', ondelete='CASCADE'))
+    code = db.relationship("Code", backref='code', lazy=True)
+
+
+class Code(db.Model):
+    id = sa.Column(sa.Integer, primary_key=True)
+    code_value = sa.Column(sa.String, nullable=False, unique=True)
+    name = sa.Column(sa.String)
+
+    def __repr__(self):
+        return f"{self.code} {self.name}"
 
 
 class Group(db.Model):
     id = sa.Column(sa.Integer, primary_key=True)
     label = sa.Column(sa.Text)
     level = sa.Column(sa.Integer, nullable=False, default=0)
+    status = sa.Column(sa.Boolean, default=False)
 
     def __repr__(self) -> str:
         return f"{self.label}: {self.level} level"

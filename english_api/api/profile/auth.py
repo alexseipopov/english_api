@@ -24,7 +24,7 @@ def register():
     phone = request.form.get("phone")
     password = request.form.get("password")
     if not phone or not password:
-        return create_res_obj(status="FAILURE", description="Not enought parameters: phone or password"), 400
+        return create_res_obj(status="FAILURE", description="Not enough parameters: phone or password"), 400
     check_user = User.query.filter_by(phone=phone).first()
     if check_user:
         return create_res_obj(status="FAILURE", description=f"User with phone {phone} already exist"), 400
