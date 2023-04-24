@@ -19,17 +19,23 @@ def insert_new_user(user_id):
 @api.post("/register")
 def register():
     """Принимаем что придет телефон в формате 7ХХХХХХХХХХ"""
-    # TODO сделать валидацию на существование пришедшего телефона или почты
-    # TODO сделать валидацию на прихоящие параметры (все ли необходимые есть)
     phone = request.form.get("phone")
     password = request.form.get("password")
-    if not phone or not password:
-        return create_res_obj(status="FAILURE", description="Not enough parameters: phone or password"), 400
-    check_user = User.query.filter_by(phone=phone).first()
-    if check_user:
-        return create_res_obj(status="FAILURE", description=f"User with phone {phone} already exist"), 400
+    email = request.form.get("email")
+    if (not phone or not password) and (not email or not password):
+        return create_res_obj(status="FAILURE", description="Not enough parameters: phone/email or password",
+                              status_code=3), 400
+    check_user_phone = User.query.filter_by(phone=phone).first()
+    check_user_email = User.query.filter_by(email=email).first()
+
+    if check_user_phone:
+        return create_res_obj(status="FAILURE", description=f"User with phone {phone} already exist",
+                              status_code=1), 400
+    if check_user_email:
+        return create_res_obj(status="FAILURE", description=f"User with email {email} already exist",
+                              status_code=2), 400
     password = generate_password_hash(password)
-    user = User(phone=phone, password=password)
+    user = User(phone=phone, email=email, password=password)
     db.session.add(user)
     db.session.commit()
     user_schema = UserSchema(exclude=["password"])
@@ -41,14 +47,19 @@ def register():
 @api.post("/auth")
 def auth():
     phone = request.form.get("phone")
+    email = request.form.get("email")
     password = request.form.get("password")
-    if not phone or not password:
-        return create_res_obj(status="FAILURE", description="No such parameters: phone or password"), 400
+    if (not phone or not password) and (not email or not password):
+        return create_res_obj(status="FAILURE", description="No such parameters: phone/email or password", status_code=3), 400
     user = User.query.filter_by(phone=phone).first()
+    if not user:
+        user = User.query.filter_by(email=email).first()
 
     if not user or not check_password_hash(user.password, password=password):
-        return create_res_obj(status="FAILURE", description="User or password is incorrect"), 400
+        return create_res_obj(status="FAILURE", description="User or password is incorrect", status_code=4), 400
 
     user_schema = UserSchema(exclude=["password"])
     data = user_schema.dump(user)
+    print(data)
+    data.setdefault("auth_token", user.id)
     return create_res_obj(data=data), 200

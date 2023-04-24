@@ -23,6 +23,9 @@ components:
         data:
           type: object
           $ref: '#/components/schemas/Person'
+        status_code:
+          type: integer
+          example: 0
     Response_auth:
       type: object
       properties:
@@ -61,6 +64,27 @@ components:
         data:
           type: object
           example: {}
+        status_code:
+          type: integer
+          example: 3
+    status_code:
+      type: object
+      properties:
+        0:
+          type: string
+          example: "Все штатно"
+        1:
+          type: string
+          example: "Телефон уже есть в БД"
+        2:
+          type: string
+          example: "Email уде есть в БД"
+        3:
+          type: string
+          example: "Недостаточно данных для регистрации"
+        4:
+          type: string
+          example: "Логин и пароль не совпадают"
     Person_auth:
       type: object
       properties:
@@ -98,29 +122,33 @@ paths:
       parameters:
         - in: query
           name: phone
-          description: phone of new user
+          description: Номер телефона пользователя. Обязательное поле, если не вводится email
           required: true
           schema:
             type: string
         - in: query
           name: password
-          description: password of new user
+          description: Пароль пользователя
           required: true
           schema:
             type: string
+        - in: query
+          name: email
+          required: true
+          description: Email пользователя. Обязательное поле, если не вводится номер телефона
       responses:
         '200':
           description: Ok response
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 $ref: '#/components/schemas/Response'
         '400':
           description: Failure response
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 $ref: '#/components/schemas/Response_fail'
   /api/auth:
@@ -138,16 +166,20 @@ paths:
         #     type: integer
         - in: query
           name: phone
-          description: phone of target user
+          description: Номер телефона пользователя. Обязательное поле, если не вводится email
           required: true
           schema:
             type: string
         - in: query
           name: password
-          description: password of target user
+          description: Пароль пользователя
           required: true
           schema:
             type: string
+        - in: query
+          name: email
+          required: true
+          description: Email пользователя. Обязательное поле, если не вводится номер телефона
       responses:
         '200':
           description: Ok response

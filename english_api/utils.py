@@ -1,8 +1,9 @@
-def create_res_obj(status="OK", description="OK", data=dict()):
+def create_res_obj(status="OK", description="OK", data=dict(), status_code=0):
     return {
         "status": status,
         "description": description,
-        "data": data
+        "data": data,
+        "status_code": status_code
     }
 
 
