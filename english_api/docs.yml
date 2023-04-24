@@ -9,6 +9,8 @@ info:
 tags:
   - name: Auth
     description: Requests for auth
+  - name: Word
+    description: Requests for auth
 components:
   schemas:
     Response:
@@ -52,6 +54,9 @@ components:
           items:
             type: object
             $ref: '#/components/schemas/Person'
+        status_code:
+          type: integer
+          example: 3
     Response_fail:
       type: object
       properties:
@@ -67,6 +72,36 @@ components:
         status_code:
           type: integer
           example: 3
+    Respanse_word:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        description:
+          type: string
+          example: Example of description
+        data:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/word'
+        status_code:
+          type: integer
+          example: 3
+    word:
+      type: object
+      properties:
+        word_id:
+          type: integer
+          example: 4
+        word:
+          type: string
+          example: "apple"
+        status:
+          type: integer
+          example: 1
+
     status_code:
       type: object
       properties:
@@ -85,6 +120,9 @@ components:
         4:
           type: string
           example: "Логин и пароль не совпадают"
+        5:
+          type: string
+          example: "Доступ запрещен. Не авторизован"
     Person_auth:
       type: object
       properties:
@@ -185,13 +223,34 @@ paths:
           description: Ok response
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 $ref: '#/components/schemas/Response_auth'
         '400':
           description: Failure response
           content:
             application/json:
-              schema: 
+              schema:
                 type: object
                 $ref: '#/components/schemas/Response_fail'
+  /api/words:
+    post:
+      tags:
+        - Word
+      summary: Получение слов для пользователя
+      description: Метод предполагает отправку аутиентификатора в заголовках запроса и получение списка слов для пользователя. Слов придет не больше 10 штук
+      parameters:
+        - in: headers
+          name: auth_token
+          description: уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Успешный пример ответа
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: '#/components/schemas/Respanse_word'

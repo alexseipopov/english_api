@@ -27,7 +27,7 @@ class Code(db.Model):
 class Group(db.Model):
     id = sa.Column(sa.Integer, primary_key=True)
     label = sa.Column(sa.Text)
-    level = sa.Column(sa.Integer, nullable=False, default=0)
+    level = sa.Column(sa.Integer, nullable=False, default=1)
     status = sa.Column(sa.Boolean, default=False)
 
     def __repr__(self) -> str:
@@ -60,7 +60,7 @@ class Status(db.Model):
 
 
 class UserWordStatus(db.Model):
-    id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.BigInteger, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id', ondelete="CASCADE"))
     word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id', ondelete="CASCADE"))
     status_id = sa.Column(sa.Integer, sa.ForeignKey('status.id', ondelete="CASCADE"))
@@ -68,7 +68,7 @@ class UserWordStatus(db.Model):
 
 
 class Statistic(db.Model):
-    id = sa.Column(sa.Integer, primary_key=True)
+    id = sa.Column(sa.BigInteger, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id'), nullable=False)
     group_id = sa.Column(sa.Integer, sa.ForeignKey('group.id'), nullable=False)
     start = sa.Column(sa.Date, default=date.today, nullable=False)

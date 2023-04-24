@@ -3,17 +3,20 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from english_api import db
 from english_api.api import api
-from english_api.models.models import User, UserWordStatus, Word
+from english_api.models.models import Group, Status, User, UserWordStatus, Word
 from english_api.models.serializer import UserSchema
 from english_api.utils import create_res_obj
 
 
 def insert_new_user(user_id):
-    words = Word.query.filter_by(group_id=1).all()
-    for word in words:
-        line = UserWordStatus(user_id=user_id, word_id=word.id, status_id=1)
-        db.session.add(line)
-    db.session.commit()
+    if not UserWordStatus.query.filter_by(user_id=user_id).first():
+        group = Group.query.order_by(Group.level).first()
+        words = Word.query.filter_by(group_id=group.id).all()
+        status = Status.query.order_by(Status.number).first()
+        for word in words:
+            new_record = UserWordStatus(user_id=user_id, word_id=word.id, status_id=status.id)
+            db.session.add(new_record)
+        db.session.commit()
 
 
 @api.post("/register")
@@ -25,15 +28,17 @@ def register():
     if (not phone or not password) and (not email or not password):
         return create_res_obj(status="FAILURE", description="Not enough parameters: phone/email or password",
                               status_code=3), 400
-    check_user_phone = User.query.filter_by(phone=phone).first()
-    check_user_email = User.query.filter_by(email=email).first()
+    if phone is not None:
+        check_user_phone = User.query.filter_by(phone=phone).first()
+        if check_user_phone:
+            return create_res_obj(status="FAILURE", description=f"User with phone {phone} already exist",
+                                  status_code=1), 400
 
-    if check_user_phone:
-        return create_res_obj(status="FAILURE", description=f"User with phone {phone} already exist",
-                              status_code=1), 400
-    if check_user_email:
-        return create_res_obj(status="FAILURE", description=f"User with email {email} already exist",
-                              status_code=2), 400
+    if email is not None:
+        check_user_email = User.query.filter_by(email=email).first()
+        if check_user_email:
+            return create_res_obj(status="FAILURE", description=f"User with email {email} already exist",
+                                  status_code=2), 400
     password = generate_password_hash(password)
     user = User(phone=phone, email=email, password=password)
     db.session.add(user)
