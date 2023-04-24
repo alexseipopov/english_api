@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import sqlalchemy as sa
 
@@ -38,11 +38,13 @@ class Word(db.Model):
     id = sa.Column(sa.Integer, primary_key=True)
     word_en = sa.Column(sa.Text, nullable=False)
     word_ru = sa.Column(sa.Text, nullable=False)
-    example = sa.Column(sa.Text)
+    example_en = sa.Column(sa.Text, nullable=False)
     audio_path = sa.Column(sa.Text)
     image_path = sa.Column(sa.Text)
     group_id = sa.Column(sa.Integer, sa.ForeignKey('group.id', ondelete="CASCADE"), nullable=False)
     group = db.relationship('Group', backref='group', lazy=True)
+    transcription = sa.Column(sa.Text, nullable=False)
+    example_ru = sa.Column(sa.Text, nullable=False)
 
     def __repr__(self) -> str:
         return f"<Word> {self.word_en}"
@@ -57,10 +59,19 @@ class Status(db.Model):
         return f"Status {self.number}. {self.description}"
 
 
-class User_Has_Word(db.Model):
-    # __tablename__ = 'association'
+class UserWordStatus(db.Model):
     id = sa.Column(sa.Integer, primary_key=True)
     user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id', ondelete="CASCADE"))
     word_id = sa.Column(sa.Integer, sa.ForeignKey('word.id', ondelete="CASCADE"))
     status_id = sa.Column(sa.Integer, sa.ForeignKey('status.id', ondelete="CASCADE"))
     update_time = sa.Column(sa.DateTime, default=datetime.utcnow)
+
+
+class Statistic(db.Model):
+    id = sa.Column(sa.Integer, primary_key=True)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey('user.id'), nullable=False)
+    group_id = sa.Column(sa.Integer, sa.ForeignKey('group.id'), nullable=False)
+    start = sa.Column(sa.Date, default=date.today, nullable=False)
+    finish = sa.Column(sa.Date)
+    learning = sa.Column(sa.Integer, default=0, nullable=False)
+    learned = sa.Column(sa.Integer, default=0, nullable=False)

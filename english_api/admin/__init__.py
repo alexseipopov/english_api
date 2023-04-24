@@ -9,8 +9,8 @@ admin = Admin(app, url='/admin', template_mode='bootstrap4')
 
 
 class WordAdminView(ModelView):
-    column_list = ("id", "word_en", "word_ru", "example", "audio_path", "image_path", "group_id")
-    form_columns = ("word_en", "word_ru", "example", "audio_path", "image_path", "group")
+    column_list = ("id", "word_en", "word_ru", "example_ru", "example_en", "transcription", "audio_path", "image_path", "group_id")
+    form_columns = ("word_en", "word_ru", "example_ru", "example_en", "transcription", "audio_path", "image_path", "group")
     form_ajax_refs = {
         "group": {
             "fields": ("label",)
