@@ -1,3 +1,4 @@
+
 INSERT INTO status (number, description)
 VALUES (0, 'don`t open'),
        (1, 'opened'),
