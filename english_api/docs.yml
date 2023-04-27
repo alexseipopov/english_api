@@ -118,6 +118,35 @@ components:
         status_code:
           type: integer
           example: 0
+    Response_option_1:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        description:
+          type: string
+          example: Example of description
+        data:
+          type: object
+          $ref: '#/components/schemas/option_1'
+        status_code:
+          type: integer
+          example: 3
+    option_1:
+      type: object
+      properties:
+        word:
+          type: string
+          example: "Apple"
+        options:
+          type: array
+          items:
+            type: string
+          example: ["Яблоко", "Мандарин", "Кефир", "Пляж"]
+        answer:
+          type: string
+          example: Яблоко
     word:
       type: object
       properties:
@@ -403,6 +432,53 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/Response_know_word'
+        '403':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+        '400':
+          description: Недостаточно данных. Либо `word_id` либо `status`. Сообщение о том, что именно не полученно будет описано в `description`
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+  /api/option_1:
+    post:
+      tags:
+        - Word
+      summary: Получение данных для первого варианта викторины
+      description: Возвращает данные для первого варианта викторины, когда задается английское слово, и на выбо 4 русских слова.
+      parameters:
+        - in: header
+          name: auth_token
+          description: Уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: word_id
+          description: id слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          description: status слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Штатная отработка метода
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_option_1'
         '403':
           description: Ошибка авторизации
           content:
