@@ -104,6 +104,20 @@ components:
         status_code:
           type: integer
           example: 3
+    Response_know_word:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        description:
+          type: string
+          example: OK
+        data:
+          type: object
+        status_code:
+          type: integer
+          example: 0
     word:
       type: object
       properties:
@@ -313,12 +327,12 @@ paths:
     post:
       tags:
         - Word
-      summary: отправка запроса на получение нового слова
+      summary: Отправка запроса на получение нового слова
       description: Метод для получения нового слова (Статусы `1` или `2`). В ответ уходит вся информация о слове, что есть.
       parameters:
         - in: header
           name: auth_token
-          description: уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          description: Уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
           required: true
           schema:
             type: string
@@ -342,6 +356,53 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/Response_new_word'
+        '403':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+        '400':
+          description: Недостаточно данных. Либо `word_id` либо `status`. Сообщение о том, что именно не полученно будет описано в `description`
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+  /api/know_this_word:
+    post:
+      tags:
+        - Word
+      summary: Метод, исключающий слово из потока обучения
+      description: Метод для ситуации, когда пользователь знает слово и его нужно внести категорию изученных.
+      parameters:
+        - in: header
+          name: auth_token
+          description: Уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: word_id
+          description: id слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          description: status слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Штатная отработка метода
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_know_word'
         '403':
           description: Ошибка авторизации
           content:

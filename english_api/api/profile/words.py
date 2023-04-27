@@ -85,4 +85,4 @@ def know_this_word():
     new_row = UserWordStatus(word_id=word_id, user_id=user_id, status_id=8)
     db.session.add(new_row)
     db.session.commit()
-    return create_res_obj(data={"status": "OK"}), 200
+    return create_res_obj(), 200
