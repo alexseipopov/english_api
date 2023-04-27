@@ -1,9 +1,11 @@
+import random
+
 from flask import request
 from sqlalchemy import func
 
 from english_api import db
 from english_api.api import api
-from english_api.models.models import User, UserWordStatus, Word
+from english_api.models.models import UserWordStatus, Word, User
 from english_api.models.serializer import WordSchema
 from english_api.utils import auth_check, create_res_obj
 
@@ -86,3 +88,33 @@ def know_this_word():
     db.session.add(new_row)
     db.session.commit()
     return create_res_obj(), 200
+
+
+@api.post("/option_1")
+def option_1():
+    if not auth_check(request):
+        return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
+    user_id = request.headers.get("auth_token")
+    status = request.form.get("status")
+    if not status:
+        return create_res_obj(status="FAILURE", description="No such status of word", status_code=3), 400
+    word_id = request.form.get("word_id")
+    if not word_id:
+        return create_res_obj(status="FAILURE", description="No such word_id of word", status_code=3), 400
+    this_word = Word.query.filter_by(id=word_id).first()
+    row = UserWordStatus(word_id=word_id, user_id=user_id, status_id=3)
+    db.session.add(row)
+    db.session.commit()
+    user = User.query.filter_by(id=user_id).first()
+    all_words = Word.query.filter_by(group_id=user.level).all()
+    random_choice = [this_word.word_ru]
+    while len(random_choice) < 4:
+        random_option = random.choice(all_words)
+        if random_option not in random_choice:
+            random_choice.append(random_option.word_ru)
+    response = {
+        "word": this_word.word_en,
+        "options": random_choice
+    }
+    return create_res_obj(data=response, status_code=0), 200
+
