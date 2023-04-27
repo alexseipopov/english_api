@@ -147,6 +147,9 @@ components:
         answer:
           type: string
           example: Яблоко
+        audio:
+          type: string
+          example: "https://........./static/audio.mp3"
     word:
       type: object
       properties:
