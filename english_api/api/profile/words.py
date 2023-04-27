@@ -116,6 +116,7 @@ def option_1():
         "word": this_word.word_en,
         "options": random_choice,
         "answer": this_word.word_ru
+
     }
     return create_res_obj(data=response, status_code=0), 200
 
