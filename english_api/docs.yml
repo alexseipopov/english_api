@@ -89,6 +89,21 @@ components:
         status_code:
           type: integer
           example: 3
+    Response_new_word:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        description:
+          type: string
+          example: Example of description
+        data:
+          type: object
+          $ref: '#/components/schemas/new_word'
+        status_code:
+          type: integer
+          example: 3
     word:
       type: object
       properties:
@@ -101,7 +116,36 @@ components:
         status:
           type: integer
           example: 1
-
+    new_word:
+      type: object
+      properties:
+        word_id:
+          type: integer
+          example: 4
+        word_en:
+          type: string
+          example: "apple"
+        word_ru:
+          type: string
+          example: "яблоко"
+        exapmle_en:
+          type: string
+          example: "This is apple"
+        example_ru:
+          type: string
+          example: "Это яблоко"
+        transcription:
+          type: string
+          example: "[ˈapəl]"
+        audio_path:
+          type: string
+          example: "https://..../statis/audio.avi"
+        image_path:
+          type: string
+          example: "https://..../statis/img.webm"
+        status:
+          type: integer
+          example: 1
     status_code:
       type: object
       properties:
@@ -174,6 +218,8 @@ paths:
           name: email
           required: true
           description: Email пользователя. Обязательное поле, если не вводится номер телефона
+          schema:
+            type: string
       responses:
         '200':
           description: Ok response
@@ -218,6 +264,8 @@ paths:
           name: email
           required: true
           description: Email пользователя. Обязательное поле, если не вводится номер телефона
+          schema:
+            type: string
       responses:
         '200':
           description: Ok response
@@ -238,9 +286,9 @@ paths:
       tags:
         - Word
       summary: Получение слов для пользователя
-      description: Метод предполагает отправку аутиентификатора в заголовках запроса и получение списка слов для пользователя. Слов придет не больше 10 штук
+      description: Метод предполагает отправку аутиентификатора в заголовках запроса и получение списка слов для пользователя. Слов придет не больше 10 штук. Слова возвращаются в массиве объектов `data`
       parameters:
-        - in: headers
+        - in: header
           name: auth_token
           description: уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
           required: true
@@ -252,5 +300,59 @@ paths:
           content:
             application/json:
               schema:
-                type: array
+                type: object
                 $ref: '#/components/schemas/Respanse_word'
+        '403':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+  /api/new_word:
+    post:
+      tags:
+        - Word
+      summary: отправка запроса на получение нового слова
+      description: Метод для получения нового слова (Статусы `1` или `2`). В ответ уходит вся информация о слове, что есть.
+      parameters:
+        - in: header
+          name: auth_token
+          description: уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: word_id
+          description: id слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          description: status слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Штатная отработка запроса. Возвращает данные слова в объекте `data`
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_new_word'
+        '403':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+        '400':
+          description: Недостаточно данных. Либо `word_id` либо `status`. Сообщение о том, что именно не полученно будет описано в `description`
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
