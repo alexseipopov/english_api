@@ -133,6 +133,72 @@ components:
         status_code:
           type: integer
           example: 3
+    Response_option_2:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        description:
+          type: string
+          example: Example of description
+        data:
+          type: object
+          $ref: '#/components/schemas/option_2'
+        status_code:
+          type: integer
+          example: 3
+    Response_option_3:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        description:
+          type: string
+          example: Example of description
+        data:
+          type: object
+          $ref: '#/components/schemas/option_3'
+        status_code:
+          type: integer
+          example: 3
+    Response_option_4:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        description:
+          type: string
+          example: Example of description
+        data:
+          type: object
+          $ref: '#/components/schemas/option_4'
+        status_code:
+          type: integer
+          example: 3
+    Response_success_answer:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OK"
+        description:
+          type: string
+          example: Example of description
+        data:
+          type: object
+          $ref: '#/components/schemas/success_answer'
+        status_code:
+          type: integer
+          example: 3
+    success_answer:
+      type: object
+      properties:
+        new_status:
+          type: integer
+          example: 4
     option_1:
       type: object
       properties:
@@ -150,6 +216,48 @@ components:
         audio:
           type: string
           example: "https://........./static/audio.mp3"
+    option_2:
+      type: object
+      properties:
+        options:
+          type: array
+          items:
+            type: string
+          example: ["Яблоко", "Мандарин", "Кефир", "Пляж"]
+        answer:
+          type: string
+          example: Яблоко
+        audio:
+          type: string
+          example: "https://........./static/audio.mp3"
+    option_3:
+      type: object
+      properties:
+        options:
+          type: array
+          items:
+            type: string
+          example: ["Apple", "Orange", "Milk", "Beach"]
+        answer:
+          type: string
+          example: Apple
+        image:
+          type: string
+          example: "https://........./static/image.jpg"
+    option_4:
+      type: object
+      properties:
+        options:
+          type: array
+          items:
+            type: string
+          example: ["Apple", "Orange", "Milk", "Beach"]
+        answer:
+          type: string
+          example: Apple
+        word:
+          type: string
+          example: Яблоко
     word:
       type: object
       properties:
@@ -454,7 +562,7 @@ paths:
       tags:
         - Word
       summary: Получение данных для первого варианта викторины
-      description: Возвращает данные для первого варианта викторины, когда задается английское слово, и на выбо 4 русских слова.
+      description: Возвращает данные для первого варианта викторины, когда задается английское слово, и на выбор 4 русских слова.
       parameters:
         - in: header
           name: auth_token
@@ -482,6 +590,194 @@ paths:
               schema:
                 type: object
                 $ref: '#/components/schemas/Response_option_1'
+        '403':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+        '400':
+          description: Недостаточно данных. Либо `word_id` либо `status`. Сообщение о том, что именно не полученно будет описано в `description`
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+  /api/option_2:
+    post:
+      tags:
+        - Word
+      summary: Получение данных для второго варианта викторины
+      description: Возвращает данные для второго варианта викторины, когда задается аудио для слова на английском, и на выбор 4 русских слова.
+      parameters:
+        - in: header
+          name: auth_token
+          description: Уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: word_id
+          description: id слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          description: status слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Штатная отработка метода
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_option_2'
+        '403':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+        '400':
+          description: Недостаточно данных. Либо `word_id` либо `status`. Сообщение о том, что именно не полученно будет описано в `description`
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+  /api/option_3:
+    post:
+      tags:
+        - Word
+      summary: Получение данных для третьего варианта викторины
+      description: Возвращает данные для третьего варианта викторины, когда задается картинка, и на выбор 4 английских слова.
+      parameters:
+        - in: header
+          name: auth_token
+          description: Уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: word_id
+          description: id слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          description: status слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Штатная отработка метода
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_option_3'
+        '403':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+        '400':
+          description: Недостаточно данных. Либо `word_id` либо `status`. Сообщение о том, что именно не полученно будет описано в `description`
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+  /api/option_4:
+    post:
+      tags:
+        - Word
+      summary: Получение данных для четвертого варианта викторины
+      description: Возвращает данные для четвертого варианта викторины, когда задается русское слово, и на выбор 4 английских слова.
+      parameters:
+        - in: header
+          name: auth_token
+          description: Уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: word_id
+          description: id слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          description: status слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Штатная отработка метода
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_option_4'
+        '403':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+        '400':
+          description: Недостаточно данных. Либо `word_id` либо `status`. Сообщение о том, что именно не полученно будет описано в `description`
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_fail'
+  /api/success_answer:
+    post:
+      tags:
+        - Word
+      summary: Endpoint для подтверждения прохождения попытки
+      description: Возвращает новый статус данного слова для клиента и всегда можно отслеживать 8 статус, чтобы поздравить с завершением слова
+      parameters:
+        - in: header
+          name: auth_token
+          description: Уникальный аутентификатор пользователя, полученные в ответ на запрос к /api/auth
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: word_id
+          description: id слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          description: status слова, данные которого нужно прислать
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Штатная отработка метода
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Response_success_answer'
         '403':
           description: Ошибка авторизации
           content:

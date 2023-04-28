@@ -151,4 +151,4 @@ def success_answer():
     row = UserWordStatus(user_id=user_id, word_id=word_id, status_id=int(status) + 1)
     db.session.add(row)
     db.session.commit()
-    return create_res_obj(description="Successful update status"), 200
+    return create_res_obj(data={"new_status": row.status_id}, description="Successful update status"), 200
