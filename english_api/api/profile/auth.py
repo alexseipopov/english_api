@@ -6,8 +6,8 @@ from english_api import db
 from english_api.api import api
 from english_api.models.models import Group, Status, User, UserWordStatus, Word
 from english_api.models.serializer import UserSchema
-from english_api.swagger import register, auth, check_auth
-from english_api.utils import create_res_obj, auth_check
+from english_api.swagger import auth, check_auth, register
+from english_api.utils import auth_check, create_res_obj
 
 
 def insert_new_user(user_id):
@@ -113,4 +113,3 @@ def check_auth():
         "email": user.email
     }
     return create_res_obj(status="SUCCESS", description="User is authorized", data=data), 200
-

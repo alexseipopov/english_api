@@ -1,16 +1,16 @@
-import random
 import logging
+import random
 
 from flasgger import swag_from
-from flask import request, abort, Response, jsonify, make_response, url_for
-from sqlalchemy import func, and_
+from flask import Response, abort, jsonify, make_response, request, url_for
+from sqlalchemy import and_, func
 
 from english_api import db
 from english_api.api import api
-from english_api.models.models import UserWordStatus, Word, User
+from english_api.models.models import User, UserWordStatus, Word
 from english_api.models.serializer import WordSchema
+from english_api.swagger import know_this_word, new_word, study_words
 from english_api.utils import auth_check, create_res_obj
-from english_api.swagger import study_words, new_word, know_this_word
 
 
 @api.get("/study_words")
