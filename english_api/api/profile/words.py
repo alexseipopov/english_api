@@ -1,65 +1,175 @@
 import random
+import logging
 
-from flask import request, abort, Response, jsonify, make_response
-from sqlalchemy import func
+from flasgger import swag_from
+from flask import request, abort, Response, jsonify, make_response, url_for
+from sqlalchemy import func, and_
 
 from english_api import db
 from english_api.api import api
 from english_api.models.models import UserWordStatus, Word, User
 from english_api.models.serializer import WordSchema
 from english_api.utils import auth_check, create_res_obj
+from english_api.swagger import study_words, new_word, know_this_word
 
 
-@api.post("/words")
+@api.get("/study_words")
+@swag_from(study_words)
 def get_words():
     if not auth_check(request):
         return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
     user_id = request.headers.get("auth_token")
     subquery = db.session.query(UserWordStatus.user_id, UserWordStatus.word_id,
-                                func.max(UserWordStatus.status_id).label("m"))\
-        .group_by(UserWordStatus.word_id, UserWordStatus.user_id)\
+                                func.max(UserWordStatus.status_id).label("m")) \
+        .group_by(UserWordStatus.word_id, UserWordStatus.user_id) \
         .subquery()
-    words = db.session.query(subquery.c.user_id, subquery.c.word_id, subquery.c.m)\
-        .filter(subquery.c.m != 8, subquery.c.user_id == user_id)\
-        .limit(10).all()
+    words = db.session.query(subquery.c.user_id, subquery.c.word_id, subquery.c.m) \
+        .filter(subquery.c.m != 8, subquery.c.user_id == user_id, subquery.c.m > 1) \
+        .all()
     if not words:
-        return "not"
-    # TODO продумать при окончании слов о переходе на следующий уровень
+        return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
     res = [{
         "word_id": i[1],
-        "word": Word.query.filter_by(id=i[0]).first().word_en,
+        "word": Word.query.filter_by(id=i[1]).first().word_en,
+        "status": i[2]}
+        for i in words]
+    return create_res_obj(data=res), 200
+
+
+@api.get("/studied_words")
+@swag_from({
+    "tags": ["Words"],
+    "summary": "Get studied words",
+    "description": "Get studied words",
+    "parameters": [
+        {
+            "in": "header",
+            "name": "auth_token",
+            "type": "string",
+            "required": True
+        },
+    ],
+    "responses": {
+        "200": {
+            "description": "OK",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": ["OK", "FAILURE"]
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "OK"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "word_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "word": {
+                                    "type": "string",
+                                    "example": "Hello"
+                                },
+                                "status": {
+                                    "type": "integer",
+                                    "example": 1
+                                }
+                            }
+                        }
+                    },
+                    "status_code": {
+                        "type": "integer",
+                        "example": 0
+                    }
+                }
+            }
+        },
+        "403": {
+            "description": "Forbidden",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": ["OK", "FAILURE"]
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Not found auth_token in headers"
+                    },
+                    "status_code": {
+                        "type": "integer",
+                        "example": 5
+                    }
+                }
+            }
+        }
+    },
+})
+def get_studied_words():
+    if not auth_check(request):
+        return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
+    user_id = request.headers.get("auth_token")
+    subquery = db.session.query(UserWordStatus.user_id, UserWordStatus.word_id,
+                                func.max(UserWordStatus.status_id).label("m")) \
+        .group_by(UserWordStatus.word_id, UserWordStatus.user_id) \
+        .subquery()
+    words = db.session.query(subquery.c.user_id, subquery.c.word_id, subquery.c.m) \
+        .filter(subquery.c.m == 8, subquery.c.user_id == user_id) \
+        .all()
+    if not words:
+        return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
+    res = [{
+        "word_id": i[1],
+        "word": Word.query.filter_by(id=i[1]).first().word_en,
         "status": i[2]}
         for i in words]
     return create_res_obj(data=res), 200
 
 
 def check_request(req):
+    logging.debug(f"req: {req.json}")
     if not auth_check(req):
+        logging.error("Not found auth_token in headers")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="Not found auth_token in headers",
                                                      status_code=5)), 403))
-    status = req.form.get("status")
+    status = req.json.get("status")
     user_id = request.headers.get("auth_token")
     if not status:
+        logging.error("No such status of word")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such status of word",
                                                      status_code=3)), 400))
-    word_id = req.form.get("word_id")
+    word_id = req.json.get("word_id")
     if not word_id:
+        logging.error("No such word_id of word")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such word_id of word",
                                                      status_code=3)), 400))
     return word_id, user_id, status
 
 
 @api.post("/new_word")
+@swag_from(new_word)
 def get_new_word():
+    logging.info("Try to get new word")
     word_id, user_id, status = check_request(request)
     row = UserWordStatus.query.filter_by(word_id=word_id, status_id=status, user_id=user_id).first()
     word = Word.query.filter_by(id=row.word_id).first()
     word_schema = WordSchema()
     result = word_schema.dump(word)
+    result["audio_path"] = url_for("static", filename="materials/" + result["audio_path"])
+    result["image_path"] = url_for("static", filename="materials/" + result["image_path"])
+    logging.info("New word was sent")
     return create_res_obj(data=result), 200
 
 
 @api.post("/know_this_word")
+@swag_from(know_this_word)
 def know_this_word():
     word_id, user_id, status = check_request(request)
     new_row = UserWordStatus(word_id=word_id, user_id=user_id, status_id=8)

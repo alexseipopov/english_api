@@ -1,3 +1,4 @@
+from flasgger import swag_from
 from flask import request
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -5,7 +6,8 @@ from english_api import db
 from english_api.api import api
 from english_api.models.models import Group, Status, User, UserWordStatus, Word
 from english_api.models.serializer import UserSchema
-from english_api.utils import create_res_obj
+from english_api.swagger import register, auth, check_auth
+from english_api.utils import create_res_obj, auth_check
 
 
 def insert_new_user(user_id):
@@ -20,11 +22,11 @@ def insert_new_user(user_id):
 
 
 @api.post("/register")
+@swag_from(register)
 def register():
-    """Принимаем что придет телефон в формате 7ХХХХХХХХХХ"""
-    phone = request.form.get("phone")
-    password = request.form.get("password")
-    email = request.form.get("email")
+    phone = request.json.get("phone")
+    password = request.json.get("password")
+    email = request.json.get("email")
     if (not phone or not password) and (not email or not password):
         return create_res_obj(status="FAILURE", description="Not enough parameters: phone/email or password",
                               status_code=3), 400
@@ -50,10 +52,11 @@ def register():
 
 
 @api.post("/auth")
+@swag_from(auth)
 def auth():
-    phone = request.form.get("phone")
-    email = request.form.get("email")
-    password = request.form.get("password")
+    phone = request.json.get("phone")
+    email = request.json.get("email")
+    password = request.json.get("password")
     if (not phone or not password) and (not email or not password):
         return create_res_obj(status="FAILURE", description="No such parameters: phone/email or password", status_code=3), 400
     user = User.query.filter_by(phone=phone).first()
@@ -68,3 +71,46 @@ def auth():
     print(data)
     data.setdefault("auth_token", user.id)
     return create_res_obj(data=data), 200
+
+
+@api.post("/change_password")
+def change_password():
+    if not auth_check(request):
+        return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
+    old_password = request.json.get("old_password")
+    new_password = request.json.get("new_password")
+    user = User.query.filter_by(id=request.headers.get("auth_token")).first()
+    if not user or not check_password_hash(user.password, password=old_password):
+        return create_res_obj(status="FAILURE", description="User or password is incorrect", status_code=4), 400
+    user.password = generate_password_hash(new_password)
+    db.session.commit()
+    return create_res_obj(status="SUCCESS", description="Password changed"), 200
+
+
+@api.delete("/delete_user")
+def delete_user():
+    if not auth_check(request):
+        return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
+    user = User.query.filter_by(id=request.headers.get("auth_token")).first()
+    if not user:
+        return create_res_obj(status="FAILURE", description="User not found", status_code=6), 400
+    db.session.delete(user)
+    db.session.commit()
+    return create_res_obj(status="SUCCESS", description="User deleted"), 200
+
+
+@api.get("/check_auth")
+@swag_from(check_auth)
+def check_auth():
+    if not auth_check(request):
+        return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
+    token = request.headers.get("auth_token")
+    user = User.query.filter_by(id=token).first()
+    if not user:
+        return create_res_obj(status="FAILURE", description="User not found", status_code=6), 400
+    data = {
+        "phone": user.phone,
+        "email": user.email
+    }
+    return create_res_obj(status="SUCCESS", description="User is authorized", data=data), 200
+
