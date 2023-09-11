@@ -6,7 +6,8 @@ from english_api import db
 from english_api.api import api
 from english_api.models.models import Group, Status, User, UserWordStatus, Word
 from english_api.models.serializer import UserSchema
-from english_api.swagger import auth, check_auth, register
+from english_api.swagger import (auth, change_password, check_auth, delete,
+                                 recovery_password, register)
 from english_api.utils import auth_check, create_res_obj
 
 
@@ -74,6 +75,7 @@ def auth():
 
 
 @api.post("/change_password")
+@swag_from(change_password)
 def change_password():
     if not auth_check(request):
         return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
@@ -88,6 +90,7 @@ def change_password():
 
 
 @api.delete("/delete_user")
+@swag_from(delete)
 def delete_user():
     if not auth_check(request):
         return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
@@ -113,3 +116,16 @@ def check_auth():
         "email": user.email
     }
     return create_res_obj(status="SUCCESS", description="User is authorized", data=data), 200
+
+
+@api.get("/recovery_password")
+@swag_from(recovery_password)
+def recovery_password():
+    email = request.args.get("email")
+    if not email:
+        return create_res_obj(status="FAILURE", description="Not found email in args", status_code=7), 400
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return create_res_obj(status="FAILURE", description="User not found", status_code=6), 400
+    # TODO тут будет логика восстановления пароля
+    return create_res_obj(status="SUCCESS", description="Password recovery (mock)"), 200
