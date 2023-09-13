@@ -35,6 +35,7 @@ jobs:
           key: ${{ secrets.PRIVATE_SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
+            cd plus1org/
             docker-compose stop
             docker-compose down
             docker pull alexseipopov/english_api:latest
