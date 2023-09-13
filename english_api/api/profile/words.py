@@ -90,12 +90,15 @@ def check_request(req):
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="Not found auth_token in headers",
                                                      status_code=5)), 403))
     status = req.json.get("status")
+    logging.debug(f"status: {status}")
     user_id = request.headers.get("auth_token")
+    logging.debug(f"user_id: {user_id}")
     if not status:
         logging.error("No such status of word")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such status of word",
                                                      status_code=3)), 400))
     word_id = req.json.get("word_id")
+    logging.debug(f"word_id: {word_id}")
     if not word_id:
         logging.error("No such word_id of word")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such word_id of word",
