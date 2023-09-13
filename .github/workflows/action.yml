@@ -33,6 +33,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.PRIVATE_SSH_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             docker-compose stop
             docker-compose down
