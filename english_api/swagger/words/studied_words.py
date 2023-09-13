@@ -1,7 +1,7 @@
-study_words = {
+studied_words = {
     "tags": ["Words"],
-    "summary": "Get words for user",
-    "description": "Get words for user",
+    "summary": "Get studied words",
+    "description": "Get studied words",
     "parameters": [
         {
             "in": "header",
@@ -58,15 +58,11 @@ study_words = {
                 "properties": {
                     "status": {
                         "type": "string",
-                        "enum": ["FAILURE"]
+                        "enum": ["OK", "FAILURE"]
                     },
                     "description": {
                         "type": "string",
                         "example": "Not found auth_token in headers"
-                    },
-                    "data": {
-                        "type": "object",
-                        "properties": {}
                     },
                     "status_code": {
                         "type": "integer",
@@ -75,5 +71,5 @@ study_words = {
                 }
             }
         }
-    }
+    },
 }

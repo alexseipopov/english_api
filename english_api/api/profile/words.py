@@ -9,7 +9,7 @@ from english_api import db
 from english_api.api import api
 from english_api.models.models import User, UserWordStatus, Word
 from english_api.models.serializer import WordSchema
-from english_api.swagger import know_this_word, new_word, study_words
+from english_api.swagger import know_this_word, new_word, study_words, studied_words
 from english_api.utils import auth_check, create_res_obj
 
 
@@ -30,88 +30,14 @@ def get_words():
         return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
     res = [{
         "word_id": i[1],
-        "word": Word.query.filter_by(id=i[1]).first().word_en,
+        "word_en": Word.query.filter_by(id=i[1]).first().word_en,
         "status": i[2]}
         for i in words]
     return create_res_obj(data=res), 200
 
 
 @api.get("/studied_words")
-@swag_from({
-    "tags": ["Words"],
-    "summary": "Get studied words",
-    "description": "Get studied words",
-    "parameters": [
-        {
-            "in": "header",
-            "name": "auth_token",
-            "type": "string",
-            "required": True
-        },
-    ],
-    "responses": {
-        "200": {
-            "description": "OK",
-            "schema": {
-                "type": "object",
-                "properties": {
-                    "status": {
-                        "type": "string",
-                        "enum": ["OK", "FAILURE"]
-                    },
-                    "description": {
-                        "type": "string",
-                        "example": "OK"
-                    },
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "word_id": {
-                                    "type": "integer",
-                                    "example": 1
-                                },
-                                "word": {
-                                    "type": "string",
-                                    "example": "Hello"
-                                },
-                                "status": {
-                                    "type": "integer",
-                                    "example": 1
-                                }
-                            }
-                        }
-                    },
-                    "status_code": {
-                        "type": "integer",
-                        "example": 0
-                    }
-                }
-            }
-        },
-        "403": {
-            "description": "Forbidden",
-            "schema": {
-                "type": "object",
-                "properties": {
-                    "status": {
-                        "type": "string",
-                        "enum": ["OK", "FAILURE"]
-                    },
-                    "description": {
-                        "type": "string",
-                        "example": "Not found auth_token in headers"
-                    },
-                    "status_code": {
-                        "type": "integer",
-                        "example": 5
-                    }
-                }
-            }
-        }
-    },
-})
+@swag_from(studied_words)
 def get_studied_words():
     if not auth_check(request):
         return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
@@ -127,7 +53,31 @@ def get_studied_words():
         return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
     res = [{
         "word_id": i[1],
-        "word": Word.query.filter_by(id=i[1]).first().word_en,
+        "word_en": Word.query.filter_by(id=i[1]).first().word_en,
+        "status": i[2]}
+        for i in words]
+    return create_res_obj(data=res), 200
+
+
+@api.get("/new_ten_words")
+def get_new_ten_words():
+    if not auth_check(request):
+        return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
+    user_id = request.headers.get("auth_token")
+    subquery = db.session.query(UserWordStatus.user_id, UserWordStatus.word_id,
+                                func.max(UserWordStatus.status_id).label("m")) \
+        .group_by(UserWordStatus.word_id, UserWordStatus.user_id) \
+        .subquery()
+    words = db.session.query(subquery.c.user_id, subquery.c.word_id, subquery.c.m) \
+        .filter(subquery.c.m == 1, subquery.c.user_id == user_id) \
+        .order_by(func.random()) \
+        .limit(10) \
+        .all()
+    if not words:
+        return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
+    res = [{
+        "word_id": i[1],
+        "wordEn": Word.query.filter_by(id=i[1]).first().word_en,
         "status": i[2]}
         for i in words]
     return create_res_obj(data=res), 200
@@ -158,6 +108,9 @@ def check_request(req):
 def get_new_word():
     logging.info("Try to get new word")
     word_id, user_id, status = check_request(request)
+    user_id = int(user_id)
+    logging.debug(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
+    logging.info(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
     row = UserWordStatus.query.filter_by(word_id=word_id, status_id=status, user_id=user_id).first()
     word = Word.query.filter_by(id=row.word_id).first()
     word_schema = WordSchema()
