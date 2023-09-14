@@ -23,6 +23,7 @@ services:
       - 3015:3015
     volumes:
       - api_storage:/var/lib/app_data
+      - static_storage:/app/static
     depends_on:
       - db
     links:
@@ -31,8 +32,10 @@ services:
   
 
 volumes:
-    api_db:
-      driver: local
-    api_storage:
-      driver: local
+  api_db:
+    driver: local
+  api_storage:
+    driver: local
+  static_storage:
+    driver: local
 
