@@ -84,12 +84,12 @@ def get_new_ten_words():
 
 
 def check_request(req):
-    logging.debug(f"req: {req.json}")
+    logging.debug(f"req: {req.form}")
     if not auth_check(req):
         logging.error("Not found auth_token in headers")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="Not found auth_token in headers",
                                                      status_code=5)), 403))
-    status = req.json.get("status")
+    status = req.form.get("status")
     logging.debug(f"status: {status}")
     user_id = request.headers.get("auth_token")
     logging.debug(f"user_id: {user_id}")
@@ -97,7 +97,7 @@ def check_request(req):
     #     logging.error("No such status of word")
     #     abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such status of word",
     #                                                  status_code=3)), 401))
-    word_id = req.json.get("word_id")
+    word_id = req.form.get("word_id")
     logging.debug(f"word_id: {word_id}")
     if not word_id:
         logging.error("No such word_id of word")
@@ -114,7 +114,7 @@ def get_new_word():
     logging.info("data: " + str(request.args))
     logging.info("data: " + str(request.form))
     logging.info("data: " + str(request.data))
-    logging.info("data: " + str(request.json))
+    # logging.info("data: " + str(request.json))
     word_id, user_id, status = check_request(request)
     user_id = int(user_id)
     logging.debug(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
