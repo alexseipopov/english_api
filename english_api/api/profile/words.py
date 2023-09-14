@@ -110,6 +110,10 @@ def check_request(req):
 @swag_from(new_word)
 def get_new_word():
     logging.info("Try to get new word")
+    logging.info("headers: " + str(request.headers))
+    logging.info("data: " + str(request.args))
+    logging.info("data: " + str(request.form))
+    logging.info("data: " + str(request.data))
     logging.info("data: " + str(request.json))
     word_id, user_id, status = check_request(request)
     user_id = int(user_id)
