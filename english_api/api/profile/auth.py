@@ -1,3 +1,5 @@
+import logging
+
 from flasgger import swag_from
 from flask import request
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -57,6 +59,8 @@ def register():
 def auth():
     phone = request.json.get("phone")
     email = request.json.get("email")
+    logging.debug(f"Auth data (JSON): {request.json}")
+    logging.info(f"Auth user. phone: {phone}, email: {email}")
     password = request.json.get("password")
     if (not phone or not password) and (not email or not password):
         return create_res_obj(status="FAILURE", description="No such parameters: phone/email or password", status_code=3), 400
