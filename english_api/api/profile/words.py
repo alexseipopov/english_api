@@ -93,16 +93,16 @@ def check_request(req):
     logging.debug(f"status: {status}")
     user_id = request.headers.get("auth_token")
     logging.debug(f"user_id: {user_id}")
-    if not status:
-        logging.error("No such status of word")
-        abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such status of word",
-                                                     status_code=3)), 400))
+    # if not status:
+    #     logging.error("No such status of word")
+    #     abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such status of word",
+    #                                                  status_code=3)), 401))
     word_id = req.json.get("word_id")
     logging.debug(f"word_id: {word_id}")
     if not word_id:
         logging.error("No such word_id of word")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such word_id of word",
-                                                     status_code=3)), 400))
+                                                     status_code=3)), 415))
     return word_id, user_id, status
 
 
@@ -114,7 +114,7 @@ def get_new_word():
     user_id = int(user_id)
     logging.debug(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
     logging.info(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
-    row = UserWordStatus.query.filter_by(word_id=word_id, status_id=status, user_id=user_id).first()
+    row = UserWordStatus.query.filter_by(word_id=word_id, user_id=user_id).first()
     word = Word.query.filter_by(id=row.word_id).first()
     word_schema = WordSchema()
     result = word_schema.dump(word)
