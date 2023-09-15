@@ -106,15 +106,39 @@ def check_request(req):
     return word_id, user_id, status
 
 
+def logging_test(req):
+    logging.info("Check request")
+    try:
+        logging.info("headers: " + str(req.headers))
+    except:
+        logging.info("headers: Can`t print")
+    try:
+        logging.info("args: " + str(req.args))
+    except:
+        logging.info("args: Can`t print")
+    try:
+        logging.info("form: " + str(req.form))
+    except:
+        logging.info("form: Can`t print")
+    try:
+        logging.info("data: " + str(req.data))
+    except:
+        logging.info("data: Can`t print")
+    try:
+        logging.info("json: " + str(req.json))
+    except:
+        logging.info("json: Can`t print")
+    try:
+        logging.info("json_data " + req.get_json())
+    except:
+        logging.info("json_data: Can`t print")
+
+
 @api.post("/new_word")
 @swag_from(new_word)
 def get_new_word():
     logging.info("Try to get new word")
-    logging.info("headers: " + str(request.headers))
-    logging.info("data: " + str(request.args))
-    logging.info("data: " + str(request.form))
-    logging.info("data: " + str(request.data))
-    logging.info("data: " + str(request.json))
+    logging_test(request)
     word_id, user_id, status = check_request(request)
     user_id = int(user_id)
     logging.debug(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
