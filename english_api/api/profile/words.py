@@ -10,6 +10,7 @@ from english_api.swagger import (know_this_word, new_word, studied_words,
                                  study_words, success_answer, new_ten_words)
 from english_api.utils import auth_check, create_res_obj
 
+BASE_URL = "http://195.133.197.62:3015"
 
 @api.get("/study_words")
 @swag_from(study_words)
@@ -121,8 +122,8 @@ def get_new_word():
     word = Word.query.filter_by(id=row.word_id).first()
     word_schema = WordSchema()
     result = word_schema.dump(word)
-    result["audio_path"] = url_for("static", filename="materials/" + result["audio_path"])
-    result["image_path"] = url_for("static", filename="materials/" + result["image_path"])
+    result["audio_path"] = BASE_URL + url_for("static", filename="materials/" + result["audio_path"])
+    result["image_path"] = BASE_URL + url_for("static", filename="materials/" + result["image_path"])
     row.status_id = 2
     db.session.commit()
     logger.info("Change status of word to 2")
