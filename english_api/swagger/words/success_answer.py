@@ -37,6 +37,10 @@ success_answer = {
                         "type": "string",
                         "enum": ["Successful update status"]
                     },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
+                    },
                     "status_code": {
                         "type": "integer",
                         "enum": [0]
@@ -57,6 +61,10 @@ success_answer = {
                         "type": "string",
                         "enum": ["No such word_id of word"]
                     },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
+                    },
                     "status_code": {
                         "type": "integer",
                         "enum": [3]
@@ -76,6 +84,10 @@ success_answer = {
                     "description": {
                         "type": "string",
                         "enum": ["Not found auth_token in headers"]
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
                     },
                     "status_code": {
                         "type": "integer",

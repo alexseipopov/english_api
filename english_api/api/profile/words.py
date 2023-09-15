@@ -7,14 +7,16 @@ from english_api.api import api
 from english_api.models.models import User, UserWordStatus, Word
 from english_api.models.serializer import WordSchema
 from english_api.swagger import (know_this_word, new_word, studied_words,
-                                 study_words, success_answer)
+                                 study_words, success_answer, new_ten_words)
 from english_api.utils import auth_check, create_res_obj
 
 
 @api.get("/study_words")
 @swag_from(study_words)
 def get_words():
+    logger.info("Get study words")
     if not auth_check(request):
+        logger.info("Not found auth_token in headers")
         return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
     user_id = request.headers.get("auth_token")
     subquery = db.session.query(UserWordStatus.user_id, UserWordStatus.word_id,
@@ -25,19 +27,22 @@ def get_words():
         .filter(subquery.c.m != 8, subquery.c.user_id == user_id, subquery.c.m > 1) \
         .all()
     if not words:
+        logger.info("No words for this user")
         return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
     res = [{
         "word_id": i[1],
-        "word_en": Word.query.filter_by(id=i[1]).first().word_en,
-        "status": i[2]}
-        for i in words]
+        "word_en": Word.query.filter_by(id=i[1]).first().word_en
+    } for i in words]
+    logger.info("Get study words success")
     return create_res_obj(data=res), 200
 
 
 @api.get("/studied_words")
 @swag_from(studied_words)
 def get_studied_words():
+    logger.info("Get studied words")
     if not auth_check(request):
+        logger.info("Not found auth_token in headers")
         return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
     user_id = request.headers.get("auth_token")
     subquery = db.session.query(UserWordStatus.user_id, UserWordStatus.word_id,
@@ -48,18 +53,22 @@ def get_studied_words():
         .filter(subquery.c.m == 8, subquery.c.user_id == user_id) \
         .all()
     if not words:
+        logger.info("No words for this user")
         return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
     res = [{
         "word_id": i[1],
-        "word_en": Word.query.filter_by(id=i[1]).first().word_en,
-        "status": i[2]}
-        for i in words]
+        "word_en": Word.query.filter_by(id=i[1]).first().word_en
+    } for i in words]
+    logger.info("Get studied words success")
     return create_res_obj(data=res), 200
 
 
 @api.get("/new_ten_words")
+@swag_from(new_ten_words)
 def get_new_ten_words():
+    logger.info("Get new ten words")
     if not auth_check(request):
+        logger.info("Not found auth_token in headers")
         return create_res_obj(status="FAILURE", description="Not found auth_token in headers", status_code=5), 403
     user_id = request.headers.get("auth_token")
     subquery = db.session.query(UserWordStatus.user_id, UserWordStatus.word_id,
@@ -75,9 +84,9 @@ def get_new_ten_words():
         return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
     res = [{
         "word_id": i[1],
-        "wordEn": Word.query.filter_by(id=i[1]).first().word_en,
-        "status": i[2]}
-        for i in words]
+        "wordEn": Word.query.filter_by(id=i[1]).first().word_en
+    } for i in words]
+    logger.info("Get new ten words success")
     return create_res_obj(data=res), 200
 
 

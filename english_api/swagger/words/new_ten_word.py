@@ -1,14 +1,15 @@
-study_words = {
+new_ten_words = {
     "tags": ["Words"],
-    "summary": "Get words for user",
-    "description": "Get words for user",
+    "summary": "Get ten new words for study",
+    "description": "Get ten new words for study",
     "parameters": [
         {
-            "in": "header",
             "name": "auth_token",
+            "in": "header",
             "type": "string",
-            "required": True
-        },
+            "required": True,
+            "description": "Auth token"
+        }
     ],
     "responses": {
         "200": {
@@ -16,14 +17,6 @@ study_words = {
             "schema": {
                 "type": "object",
                 "properties": {
-                    "status": {
-                        "type": "string",
-                        "enum": ["OK", "FAILURE"]
-                    },
-                    "description": {
-                        "type": "string",
-                        "example": "OK"
-                    },
                     "data": {
                         "type": "array",
                         "items": {
@@ -31,33 +24,33 @@ study_words = {
                             "properties": {
                                 "word_id": {
                                     "type": "integer",
+                                    "description": "Word id",
                                     "example": 1
                                 },
-                                "word_en": {
+                                "wordEn": {
                                     "type": "string",
+                                    "description": "Word in english",
                                     "example": "Hello"
                                 }
                             }
                         }
-                    },
-                    "status_code": {
-                        "type": "integer",
-                        "example": 0
                     }
                 }
             }
         },
         "403": {
-            "description": "Forbidden",
+            "description": "Not found auth_token in headers",
             "schema": {
                 "type": "object",
                 "properties": {
                     "status": {
                         "type": "string",
-                        "enum": ["FAILURE"]
+                        "description": "Status",
+                        "example": "FAILURE"
                     },
                     "description": {
                         "type": "string",
+                        "description": "Description",
                         "example": "Not found auth_token in headers"
                     },
                     "data": {
@@ -66,6 +59,7 @@ study_words = {
                     },
                     "status_code": {
                         "type": "integer",
+                        "description": "Status code",
                         "example": 5
                     }
                 }

@@ -36,10 +36,6 @@ studied_words = {
                                 "word_en": {
                                     "type": "string",
                                     "example": "Hello"
-                                },
-                                "status": {
-                                    "type": "integer",
-                                    "example": 1
                                 }
                             }
                         }
@@ -63,6 +59,10 @@ studied_words = {
                     "description": {
                         "type": "string",
                         "example": "Not found auth_token in headers"
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
                     },
                     "status_code": {
                         "type": "integer",

@@ -9,3 +9,4 @@ from english_api.swagger.words.know_this_word import know_this_word
 from english_api.swagger.words.new_word import new_word
 from english_api.swagger.words.studied_words import studied_words
 from english_api.swagger.words.success_answer import success_answer
+from english_api.swagger.words.new_ten_word import new_ten_words

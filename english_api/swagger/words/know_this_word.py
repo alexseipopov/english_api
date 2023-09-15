@@ -20,10 +20,6 @@ know_this_word = {
                     "word_id": {
                         "type": "integer",
                         "example": 1
-                    },
-                    "status": {
-                        "type": "integer",
-                        "example": 2
                     }
                 }
             }
@@ -42,6 +38,10 @@ know_this_word = {
                     "description": {
                         "type": "string",
                         "example": "Word status was changed"
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
                     },
                     "status_code": {
                         "type": "integer",
@@ -63,6 +63,10 @@ know_this_word = {
                         "type": "string",
                         "example": "No such status of word"
                     },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
+                    },
                     "status_code": {
                         "type": "integer",
                         "example": 3
@@ -82,6 +86,10 @@ know_this_word = {
                     "description": {
                         "type": "string",
                         "example": "Not found auth_token in headers"
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
                     },
                     "status_code": {
                         "type": "integer",

@@ -19,10 +19,6 @@ new_word = {
                     "word_id": {
                         "type": "integer",
                         "example": 1
-                    },
-                    "status": {
-                        "type": "integer",
-                        "example": 1
                     }
                 }
             }
@@ -103,6 +99,10 @@ new_word = {
                         "type": "string",
                         "example": "No such status of word"
                     },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
+                    },
                     "status_code": {
                         "type": "integer",
                         "example": 3
@@ -122,6 +122,10 @@ new_word = {
                     "description": {
                         "type": "string",
                         "example": "Not found auth_token in headers"
+                    },
+                    "data": {
+                        "type": "object",
+                        "properties": {}
                     },
                     "status_code": {
                         "type": "integer",
