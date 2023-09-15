@@ -132,6 +132,10 @@ def logging_test(req):
         logging.info("json_data " + req.get_json())
     except:
         logging.info("json_data: Can`t print")
+    try:
+        logging.info("funcs" + dir(req))
+    except:
+        logging.info("funcs: Can`t print")
 
 
 @api.post("/new_word")
