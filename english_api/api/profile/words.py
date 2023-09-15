@@ -5,7 +5,7 @@ from flasgger import swag_from
 from flask import Response, abort, jsonify, make_response, request, url_for
 from sqlalchemy import and_, func
 
-from english_api import db
+from english_api import db, logger
 from english_api.api import api
 from english_api.models.models import User, UserWordStatus, Word
 from english_api.models.serializer import WordSchema
@@ -84,76 +84,76 @@ def get_new_ten_words():
 
 
 def check_request(req):
-    logging.debug(f"req: {req.form}")
+    logger.debug(f"req: {req.json}")
     if not auth_check(req):
-        logging.error("Not found auth_token in headers")
+        logger.error("Not found auth_token in headers")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="Not found auth_token in headers",
                                                      status_code=5)), 403))
-    status = req.form.get("status")
-    logging.debug(f"status: {status}")
+    status = req.json.get("status")
+    logger.debug(f"status: {status}")
     user_id = request.headers.get("auth_token")
-    logging.debug(f"user_id: {user_id}")
+    logger.debug(f"user_id: {user_id}")
     # if not status:
-    #     logging.error("No such status of word")
+    #     logger.error("No such status of word")
     #     abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such status of word",
     #                                                  status_code=3)), 401))
-    word_id = req.form.get("word_id")
-    logging.debug(f"word_id: {word_id}")
+    word_id = req.json.get("word_id")
+    logger.debug(f"word_id: {word_id}")
     if not word_id:
-        logging.error("No such word_id of word")
+        logger.error("No such word_id of word")
         abort(make_response(jsonify(**create_res_obj(status="FAILURE", description="No such word_id of word",
                                                      status_code=3)), 415))
     return word_id, user_id, status
 
 
 def logging_test(req):
-    logging.info("Check request")
+    logger.info("Check request")
     try:
-        logging.info("headers: " + str(req.headers))
+        logger.info("headers: " + str(req.headers))
     except:
-        logging.info("headers: Can`t print")
+        logger.info("headers: Can`t print")
     try:
-        logging.info("args: " + str(req.args))
+        logger.info("args: " + str(req.args))
     except:
-        logging.info("args: Can`t print")
+        logger.info("args: Can`t print")
     try:
-        logging.info("form: " + str(req.form))
+        logger.info("form: " + str(req.form))
     except:
-        logging.info("form: Can`t print")
+        logger.info("form: Can`t print")
     try:
-        logging.info("data: " + str(req.data))
+        logger.info("data: " + str(req.data))
     except:
-        logging.info("data: Can`t print")
+        logger.info("data: Can`t print")
     try:
-        logging.info("json: " + str(req.json))
+        logger.info("json: " + str(req.json))
     except:
-        logging.info("json: Can`t print")
+        logger.info("json: Can`t print")
     try:
-        logging.info("json_data " + req.get_json())
+        logger.info("json_data " + req.get_json())
     except:
-        logging.info("json_data: Can`t print")
+        logger.info("json_data: Can`t print")
     try:
-        logging.info("funcs" + dir(req))
+        logger.info("funcs" + dir(req))
     except:
-        logging.info("funcs: Can`t print")
+        logger.info("funcs: Can`t print")
 
 
 @api.post("/new_word")
 @swag_from(new_word)
 def get_new_word():
-    logging.info("Try to get new word")
+    logger.info("Try to get new word")
     logging_test(request)
     word_id, user_id, status = check_request(request)
     user_id = int(user_id)
-    logging.debug(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
-    logging.info(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
+    logger.debug(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
+    logger.info(f"word_id: {word_id}, user_id: {user_id}, status: {status}; types: {type(word_id)}, {type(user_id)}, {type(status)}")
     row = UserWordStatus.query.filter_by(word_id=word_id, user_id=user_id).first()
     word = Word.query.filter_by(id=row.word_id).first()
     word_schema = WordSchema()
     result = word_schema.dump(word)
     result["audio_path"] = url_for("static", filename="materials/" + result["audio_path"])
     result["image_path"] = url_for("static", filename="materials/" + result["image_path"])
-    logging.info("New word was sent")
+    logger.info("New word was sent")
     return create_res_obj(data=result), 200
 
 

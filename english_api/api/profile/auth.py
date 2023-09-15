@@ -4,7 +4,7 @@ from flasgger import swag_from
 from flask import request
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from english_api import db
+from english_api import db, logger
 from english_api.api import api
 from english_api.models.models import Group, Status, User, UserWordStatus, Word
 from english_api.models.serializer import UserSchema
@@ -59,9 +59,9 @@ def register():
 def auth():
     phone = request.json.get("phone")
     email = request.json.get("email")
-    logging.debug(f"Auth headers: {request.headers}")
-    logging.debug(f"Auth data (JSON): {request.json}")
-    logging.info(f"Auth user. phone: {phone}, email: {email}")
+    logger.debug(f"Auth headers: {request.headers}")
+    logger.debug(f"Auth data (JSON): {request.json}")
+    logger.info(f"Auth user. phone: {phone}, email: {email}")
     password = request.json.get("password")
     if (not phone or not password) and (not email or not password):
         return create_res_obj(status="FAILURE", description="No such parameters: phone/email or password", status_code=3), 400
