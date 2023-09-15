@@ -59,6 +59,7 @@ def register():
 def auth():
     phone = request.json.get("phone")
     email = request.json.get("email")
+    logging.debug(f"Auth headers: {request.headers}")
     logging.debug(f"Auth data (JSON): {request.json}")
     logging.info(f"Auth user. phone: {phone}, email: {email}")
     password = request.json.get("password")
