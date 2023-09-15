@@ -23,7 +23,7 @@ services:
       - 3015:3015
     volumes:
       - api_storage:/var/lib/app_data
-      - static_storage:/app/static
+      - static_storage:/app/english_api/static
     depends_on:
       - db
     links:
