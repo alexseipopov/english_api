@@ -8,3 +8,4 @@ from english_api.swagger.words.get_words import study_words
 from english_api.swagger.words.know_this_word import know_this_word
 from english_api.swagger.words.new_word import new_word
 from english_api.swagger.words.studied_words import studied_words
+from english_api.swagger.words.success_answer import success_answer
