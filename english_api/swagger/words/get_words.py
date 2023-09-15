@@ -36,6 +36,10 @@ study_words = {
                                 "word_en": {
                                     "type": "string",
                                     "example": "Hello"
+                                },
+                                "status": {
+                                    "type": "integer",
+                                    "example": 1
                                 }
                             }
                         }

@@ -31,7 +31,8 @@ def get_words():
         return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
     res = [{
         "word_id": i[1],
-        "word_en": Word.query.filter_by(id=i[1]).first().word_en
+        "word_en": Word.query.filter_by(id=i[1]).first().word_en,
+        "status_id": i[2]
     } for i in words]
     logger.info("Get study words success")
     return create_res_obj(data=res), 200
@@ -57,7 +58,8 @@ def get_studied_words():
         return create_res_obj(status="OK", description="No words for this user", status_code=6), 200
     res = [{
         "word_id": i[1],
-        "word_en": Word.query.filter_by(id=i[1]).first().word_en
+        "word_en": Word.query.filter_by(id=i[1]).first().word_en,
+        "status_id": i[2]
     } for i in words]
     logger.info("Get studied words success")
     return create_res_obj(data=res), 200
