@@ -122,8 +122,14 @@ def get_new_word():
     word = Word.query.filter_by(id=row.word_id).first()
     word_schema = WordSchema()
     result = word_schema.dump(word)
-    result["audio_path"] = BASE_URL + url_for("static", filename="materials/" + result["audio_path"])
-    result["image_path"] = BASE_URL + url_for("static", filename="materials/" + result["image_path"])
+    if not result["audio_path"]:
+        result["audio_path"] = "None"
+    else:
+        result["audio_path"] = BASE_URL + url_for("static", filename="materials/" + result["audio_path"])
+    if not result["image_path"]:
+        result["image_path"] = BASE_URL + url_for("static", filename="materials/default/no_photo.jpg")
+    else:
+        result["image_path"] = BASE_URL + url_for("static", filename="materials/" + result["image_path"])
     row.status_id = 2
     db.session.commit()
     logger.info("Change status of word to 2")
